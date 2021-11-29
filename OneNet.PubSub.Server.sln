@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneNet.PubSub.Server", "OneNet.PubSub.Server\OneNet.PubSub.Server.csproj", "{C030944F-5970-4E4B-97CA-6FE8E6B8A922}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C030944F-5970-4E4B-97CA-6FE8E6B8A922}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C030944F-5970-4E4B-97CA-6FE8E6B8A922}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C030944F-5970-4E4B-97CA-6FE8E6B8A922}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C030944F-5970-4E4B-97CA-6FE8E6B8A922}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
