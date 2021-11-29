@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OneNet.PubSub.Server.Models;
 
 namespace OneNet.PubSub.Server.Hubs.Models
 {

@@ -3,16 +3,16 @@ using System.Linq;
 
 namespace OneNet.PubSub.Server.Hubs.Models
 {
-    public class SignalRGroupProxyManager
+    public class SignalRGroupProxyManagerFactory
     {
-        private static SignalRGroupProxyManager _instance;
+        private static SignalRGroupProxyManagerFactory _instance;
 
-        public static SignalRGroupProxyManager Instance =>
-            _instance ??= new SignalRGroupProxyManager();
+        public static SignalRGroupProxyManagerFactory Instance =>
+            _instance ??= new SignalRGroupProxyManagerFactory();
 
         private readonly IDictionary<string, SignalRGroupProxy> _dictionary;
 
-        private SignalRGroupProxyManager()
+        private SignalRGroupProxyManagerFactory()
         {
             _dictionary = new Dictionary<string, SignalRGroupProxy>();
         }

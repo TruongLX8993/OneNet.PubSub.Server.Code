@@ -1,11 +1,13 @@
-﻿namespace OneNet.PubSub.Server.Hubs.Models
+﻿using OneNet.PubSub.Server.Models;
+
+namespace OneNet.PubSub.Server.Hubs.Models
 {
-    public class ConnectionManager
+    internal class HubConnectionManager
     {
         private readonly ConnectionList _connectionList;
         private readonly string _hubName;
-
-        public ConnectionManager(string hubName)
+        
+        public HubConnectionManager(string hubName)
         {
             _connectionList = new ConnectionList();
             _hubName = hubName;

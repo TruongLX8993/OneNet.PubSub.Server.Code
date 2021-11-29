@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace OneNet.PubSub.Server.Hubs.Models
+namespace OneNet.PubSub.Server.Models
 {
     public class ConnectionList
     {

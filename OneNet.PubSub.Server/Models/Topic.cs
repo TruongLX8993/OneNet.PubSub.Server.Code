@@ -1,5 +1,4 @@
 ﻿using System;
-using OneNet.PubSub.Server.Hubs.Models;
 
 namespace OneNet.PubSub.Server.Models
 {

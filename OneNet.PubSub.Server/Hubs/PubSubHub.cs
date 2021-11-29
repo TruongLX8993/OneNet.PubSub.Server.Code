@@ -17,7 +17,7 @@ namespace OneNet.PubSub.Server.Hubs
     {
         private readonly ILogger<PubSubHub> _logger;
         private readonly ITopicRepository _topicRepository;
-        private static readonly ConnectionManager ConnectionManager = new ConnectionManager(nameof(PubSubHub));
+        private static readonly HubConnectionManager HubConnectionManager = new HubConnectionManager(nameof(PubSubHub));
         private readonly SignalRGroupProxy _signalRGroupProxy;
 
         public PubSubHub(
@@ -26,17 +26,17 @@ namespace OneNet.PubSub.Server.Hubs
         {
             _logger = logger;
             _topicRepository = topicRepository;
-            _signalRGroupProxy = SignalRGroupProxyManager.Instance.GetGroupProxy(this);
+            _signalRGroupProxy = SignalRGroupProxyManagerFactory.Instance.GetGroupProxy(this);
         }
 
         public override Task OnConnectedAsync()
         {
             var username = Context.GetHttpContext()
                 .Request.Query["username"];
-            ConnectionManager.AddConnection(Context.ConnectionId, username);
+            HubConnectionManager.AddConnection(Context.ConnectionId, username);
             _logger.LogInformation(
                 // ReSharper disable once TemplateIsNotCompileTimeConstantProblem
-                $"{nameof(OnConnectedAsync)}-NumberConnection:{ConnectionManager.GetNumberConnection()}");
+                $"{nameof(OnConnectedAsync)}-NumberConnection:{HubConnectionManager.GetNumberConnection()}");
             return base.OnConnectedAsync();
         }
 
@@ -51,10 +51,10 @@ namespace OneNet.PubSub.Server.Hubs
             }
 
 
-            ConnectionManager.RemoveConnection(Context.ConnectionId);
+            HubConnectionManager.RemoveConnection(Context.ConnectionId);
             _logger.LogInformation(
                 // ReSharper disable once TemplateIsNotCompileTimeConstantProblem
-                $"{nameof(OnDisconnectedAsync)}-NumberConnection:{ConnectionManager.GetNumberConnection()}");
+                $"{nameof(OnDisconnectedAsync)}-NumberConnection:{HubConnectionManager.GetNumberConnection()}");
             base.OnDisconnectedAsync(exception);
         }
 
@@ -96,7 +96,7 @@ namespace OneNet.PubSub.Server.Hubs
             var topic = await _topicRepository.GetByName(topicName);
             if (topic == null)
                 throw new NotExistTopicException();
-            await _signalRGroupProxy.AddClientToGroup(topicName, ConnectionManager.GetById(Context.ConnectionId));
+            await _signalRGroupProxy.AddClientToGroup(topicName, HubConnectionManager.GetById(Context.ConnectionId));
         }
 
         [HubMethodName("un-subscribe")]
@@ -133,7 +133,7 @@ namespace OneNet.PubSub.Server.Hubs
 
         private Connection GetCurrentConnection()
         {
-            return ConnectionManager.GetById(Context.ConnectionId);
+            return HubConnectionManager.GetById(Context.ConnectionId);
         }
     }
 }
