@@ -5,10 +5,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using OneNet.PubSub.Server.Application.Repository;
+using OneNet.PubSub.Server.Application.Services;
 using OneNet.PubSub.Server.Extensions;
 using OneNet.PubSub.Server.Hubs;
 using OneNet.PubSub.Server.Infrastructures.Repository;
-using OneNet.PubSub.Server.Repository;
+using OneNet.PubSub.Server.Infrastructures.SignalR;
 
 namespace OneNet.PubSub.Server
 {

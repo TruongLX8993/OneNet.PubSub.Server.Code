@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using OneNet.PubSub.Server.Models;
+using OneNet.PubSub.Server.Application.Domains;
 
-namespace OneNet.PubSub.Server.DTOs
+namespace OneNet.PubSub.Server.Application.DTOs
 {
     public class TopicDTO
     {

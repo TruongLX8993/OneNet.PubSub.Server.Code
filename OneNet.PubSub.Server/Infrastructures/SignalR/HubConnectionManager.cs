@@ -1,16 +1,19 @@
-﻿using OneNet.PubSub.Server.Models;
+﻿using OneNet.PubSub.Server.Application.Domains;
 
-namespace OneNet.PubSub.Server.Hubs.Models
+namespace OneNet.PubSub.Server.Infrastructures.SignalR
 {
-    internal class HubConnectionManager
+    /// <summary>
+    /// To manage all connection in hub.
+    /// </summary>
+    public class HubConnectionManager
     {
         private readonly ConnectionList _connectionList;
-        private readonly string _hubName;
-        
-        public HubConnectionManager(string hubName)
+        private string _hubName;
+
+        public HubConnectionManager()
         {
             _connectionList = new ConnectionList();
-            _hubName = hubName;
+            _hubName = nameof(_hubName);
         }
 
         public void AddConnection(string connectionId, string username)

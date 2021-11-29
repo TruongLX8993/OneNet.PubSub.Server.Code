@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using OneNet.PubSub.Server.DTOs;
-using OneNet.PubSub.Server.Repository;
+using OneNet.PubSub.Server.Application.DTOs;
+using OneNet.PubSub.Server.Application.Repository;
 
-namespace OneNet.PubSub.Server.Controllers
+namespace OneNet.PubSub.Server.Apis.Controllers
 {
     [ApiController]
     [Route("api/topic")]
@@ -23,7 +23,7 @@ namespace OneNet.PubSub.Server.Controllers
             var topics = await _topicRepository.Search(request.Name);
             var rs = topics.Select(tp => new TopicDTO(tp))
                 .ToList();
-            return Ok(new Response()
+            return Ok(new ApiResponse()
             {
                 Status = 0,
                 Data = rs

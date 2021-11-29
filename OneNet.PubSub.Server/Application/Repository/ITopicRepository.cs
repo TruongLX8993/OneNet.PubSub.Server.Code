@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using OneNet.PubSub.Server.Models;
+using OneNet.PubSub.Server.Application.Domains;
 
-namespace OneNet.PubSub.Server.Repository
+namespace OneNet.PubSub.Server.Application.Repository
 {
     public interface ITopicRepository
     {

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace OneNet.PubSub.Server.DTOs
+namespace OneNet.PubSub.Server.Application.DTOs
 {
     public class FindTopicRequest
     {

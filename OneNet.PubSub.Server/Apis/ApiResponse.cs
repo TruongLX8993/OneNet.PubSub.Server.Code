@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace OneNet.PubSub.Server.DTOs
+namespace OneNet.PubSub.Server.Apis
 {
-    public class Response
+    public class ApiResponse
     {
         [JsonProperty("status")] public int Status { get; set; }
         [JsonProperty("data")] public object Data { get; set; }

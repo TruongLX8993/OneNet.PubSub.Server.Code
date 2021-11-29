@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace OneNet.PubSub.Server.Models
+namespace OneNet.PubSub.Server.Application.Domains
 {
     public class ConnectionList
     {

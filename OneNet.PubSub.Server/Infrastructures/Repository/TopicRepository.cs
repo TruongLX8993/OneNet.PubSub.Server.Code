@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OneNet.PubSub.Server.Models;
-using OneNet.PubSub.Server.Repository;
+using OneNet.PubSub.Server.Application.Domains;
+using OneNet.PubSub.Server.Application.Repository;
 
 namespace OneNet.PubSub.Server.Infrastructures.Repository
 {
