@@ -15,9 +15,7 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR
 
         public Connection GetConnection()
         {
-            var id = _baseHub.Context.ConnectionId;
-            return _baseHub.GetHubConnectionManager()
-                .GetById(id);
+            return _baseHub.GetCurrentConnection();
         }
     }
 }

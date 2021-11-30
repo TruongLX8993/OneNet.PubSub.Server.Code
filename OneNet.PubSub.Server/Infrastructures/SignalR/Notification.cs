@@ -19,21 +19,12 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR
         {
             await _hub.Clients.Group(topic.Name)
                 .SendAsync("onAbortTopic", new TopicDTO(topic));
-            await _hub.GetGroupProxy(topic.Name)
-                .RemoveClientFromGroup(topic.Name);
+            await _hub.RemoveAllClientFromGroup(topic.Name);
         }
 
         public async Task OnCreateTopic(Topic topic)
         {
             await _hub.Clients.All.SendAsync("onNewTopic", new TopicDTO(topic));
-        }
-
-        public async Task OnNewMessage(Topic topic, object data)
-        {
-            await _hub.Clients.Group(topic.Name)
-                .SendAsync("onNewMessage",
-                    topic,
-                    data);
         }
     }
 }

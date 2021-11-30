@@ -18,8 +18,7 @@ namespace OneNet.PubSub.Server.Hubs
         private readonly ILogger<PubSubHub> _logger;
         private readonly ITopicRepository _topicRepository;
         private readonly ITopicService _topicService;
-
-
+        
         public PubSubHub(
             ILogger<PubSubHub> logger,
             ITopicRepository topicRepository)
@@ -53,8 +52,7 @@ namespace OneNet.PubSub.Server.Hubs
             {
                 await AbortTopic(topic);
             }
-
-
+            
             GetHubConnectionManager()
                 .RemoveConnection(Context.ConnectionId);
             _logger.LogInformation(
@@ -67,12 +65,8 @@ namespace OneNet.PubSub.Server.Hubs
         public async Task CreateTopic(string topicName, TopicConfigDTO topicConfig)
         {
             topicConfig ??= TopicConfigDTO.CreateDefault();
-            _logger.LogInformation($"{nameof(CreateTopic)}:{topicName}");
-            _logger.LogInformation($"{nameof(CreateTopic)}:{JsonConvert.SerializeObject(topicConfig)}");
-
             var res = await _topicService.CreateTopic(topicName, topicConfig);
-            if (res.IsNewTopic)
-                await Clients.All.SendAsync("onNewTopic", res.TopicDto);
+            _logger.LogInformation($"{nameof(CreateTopic)} is successfully: {JsonConvert.SerializeObject(res)}");
         }
 
         [HubMethodName("subscribe")]

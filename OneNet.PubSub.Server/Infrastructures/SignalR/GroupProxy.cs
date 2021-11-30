@@ -8,13 +8,13 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR
     /// To manage set of connection in one group.
     /// Keep feature signalR group and tracking connection.
     /// </summary>
-    public class SignalRGroupProxy
+    public class GroupProxy
     {
         private BaseHub _hub;
         private string _groupName;
         private readonly ConnectionList _connectionList;
 
-        public SignalRGroupProxy()
+        public GroupProxy()
         {
             _connectionList = new ConnectionList();
         }
@@ -49,7 +49,7 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR
             }
         }
 
-        public SignalRGroupProxy UpdateHub(BaseHub hub)
+        public GroupProxy UpdateHub(BaseHub hub)
         {
             _hub = hub;
             _groupName = hub.Name;
