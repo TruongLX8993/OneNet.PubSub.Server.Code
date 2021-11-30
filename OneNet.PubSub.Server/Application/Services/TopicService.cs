@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using OneNet.PubSub.Server.Application.Domains;
 using OneNet.PubSub.Server.Application.DTOs;
 using OneNet.PubSub.Server.Application.Interfaces;
@@ -21,7 +22,7 @@ namespace OneNet.PubSub.Server.Application.Services
             ITopicRepository topicRepository,
             ICurrentConnection currentConnection,
             INotification notification,
-            IMessageSender messageSender, 
+            IMessageSender messageSender,
             ISubscription subscription)
         {
             _topicRepository = topicRepository;
@@ -91,6 +92,16 @@ namespace OneNet.PubSub.Server.Application.Services
             await _subscription.UnSubscribe(topic, currentConnection);
         }
 
+        public async Task UnSubscribeAll()
+        {
+            var currentConnection = _currentConnection.GetConnection();
+            var topics = await _topicRepository.GetByOwnerConnectionId(currentConnection.Id);
+            var canAbortTopic = topics.Where(topic => topic.IsAbortWhenOwnerDisconnect())
+                .ToList();
+            await _subscription.UnSubscribe(currentConnection);
+            currentConnection.RemoveAllTopics();
+        }
+
         public async Task Subscribe(string topicName)
         {
             var topic = await _topicRepository.GetByName(topicName);
@@ -98,6 +109,7 @@ namespace OneNet.PubSub.Server.Application.Services
                 throw new NotExistTopicException();
             var currentConnection = _currentConnection.GetConnection();
             await _subscription.Subscribe(topic, currentConnection);
+            currentConnection.AddTopic(topicName);
         }
     }
 }

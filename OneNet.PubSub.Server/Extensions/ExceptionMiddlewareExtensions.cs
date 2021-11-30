@@ -11,16 +11,16 @@ namespace OneNet.PubSub.Server.Extensions
     {
         public static void ConfigureExceptionHandler(this IApplicationBuilder app)
         {
-            app.UseExceptionHandler(appError => { appError.Run(Handler); });
+            // app.UseExceptionHandler(appError => { appError.Run(Handler); });
         }
 
-        private static async Task Handler(HttpContext context)
-        {
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            context.Response.ContentType = "application/json";
-            var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
-            var error = contextFeature.Error;
-            Console.WriteLine(error.Message);
-        }
+        // private static async Task Handler(HttpContext context)
+        // {
+        //     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        //     context.Response.ContentType = "application/json";
+        //     var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
+        //     var error = contextFeature.Error;
+        //     Console.WriteLine(error.Message);
+        // }
     }
 }

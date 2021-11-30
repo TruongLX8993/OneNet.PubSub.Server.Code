@@ -4,11 +4,11 @@ using OneNet.PubSub.Server.Hubs;
 
 namespace OneNet.PubSub.Server.Infrastructures.SignalR
 {
-    public class CurrentConnection : ICurrentConnection
+    public class CurrentConnectionService : ICurrentConnection
     {
         private readonly BaseHub _baseHub;
 
-        public CurrentConnection(BaseHub baseHub)
+        public CurrentConnectionService(BaseHub baseHub)
         {
             _baseHub = baseHub;
         }

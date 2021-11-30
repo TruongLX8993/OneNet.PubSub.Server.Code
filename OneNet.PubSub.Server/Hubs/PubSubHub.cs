@@ -18,7 +18,7 @@ namespace OneNet.PubSub.Server.Hubs
         private readonly ILogger<PubSubHub> _logger;
         private readonly ITopicRepository _topicRepository;
         private readonly ITopicService _topicService;
-        
+
         public PubSubHub(
             ILogger<PubSubHub> logger,
             ITopicRepository topicRepository)
@@ -26,7 +26,7 @@ namespace OneNet.PubSub.Server.Hubs
             _logger = logger;
             _topicRepository = topicRepository;
             _topicService = new TopicService(topicRepository,
-                new CurrentConnection(this),
+                new CurrentConnectionService(this),
                 new Notification(this),
                 new MessageSender(this),
                 new Subscription(this));
@@ -36,27 +36,24 @@ namespace OneNet.PubSub.Server.Hubs
         {
             var username = Context.GetHttpContext()
                 .Request.Query["username"];
-            GetHubConnectionManager()
+            ConnectionManager
                 .AddConnection(Context.ConnectionId, username);
             _logger.LogInformation(
-                $"{nameof(OnConnectedAsync)}-NumberConnection:{GetHubConnectionManager().GetNumberConnection()}");
+                $"{nameof(OnConnectedAsync)}-NumberConnection:{ConnectionManager.GetNumberConnection()}");
             return base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var topics = await _topicRepository.GetByOwnerConnectionId(Context.ConnectionId);
-            var canAbortTopic = topics.Where(topic => topic.IsAbortWhenOwnerDisconnect())
-                .ToList();
+      
+
+            await _topicService.UnSubscribeAll();
             foreach (var topic in canAbortTopic)
-            {
                 await AbortTopic(topic);
-            }
-            
-            GetHubConnectionManager()
-                .RemoveConnection(Context.ConnectionId);
+
+            ConnectionManager.RemoveConnection(Context.ConnectionId);
             _logger.LogInformation(
-                $"{nameof(OnDisconnectedAsync)}-NumberConnection:{GetHubConnectionManager().GetNumberConnection()}");
+                $"{nameof(OnDisconnectedAsync)}-NumberConnection:{ConnectionManager.GetNumberConnection()}");
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -69,11 +66,6 @@ namespace OneNet.PubSub.Server.Hubs
             _logger.LogInformation($"{nameof(CreateTopic)} is successfully: {JsonConvert.SerializeObject(res)}");
         }
 
-        [HubMethodName("subscribe")]
-        public async Task Subscribe(string topicName)
-        {
-            await _topicService.Subscribe(topicName);
-        }
 
         [HubMethodName("un-subscribe")]
         public async Task UnSubscribe(string topicName)
@@ -81,12 +73,25 @@ namespace OneNet.PubSub.Server.Hubs
             await _topicService.UnSubscribe(topicName);
             await GetGroupProxy(topicName)
                 .RemoveClientFromGroup(Context.ConnectionId);
+            _logger.LogInformation($"{nameof(UnSubscribe)}-{Context.ConnectionId}:{topicName}");
+        }
+
+        [HubMethodName("subscribe")]
+        public async Task Subscribe(string topicName)
+        {
+            await _topicService.Subscribe(topicName);
+            _logger.LogInformation($"{nameof(Subscribe)}-{Context.ConnectionId}:{topicName}");
+            // await Groups.AddToGroupAsync(Context.ConnectionId, topicName);
         }
 
         [HubMethodName("publish")]
         public async Task Publish(string topic, object data)
         {
             await _topicService.SendMessage(topic, data);
+            _logger.LogInformation(
+                $"{nameof(Publish)}-{Context.ConnectionId}:{topic}-{JsonConvert.SerializeObject(data)}");
+            // await Clients.Group(topic)
+            //     .SendAsync("onNewMessage", topic, data);
         }
 
         private async Task AbortTopic(Topic topic)

@@ -25,5 +25,15 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR
             await _hub.GetGroupProxy(topic.Name)
                 .RemoveClientFromGroup(connection.Id);
         }
+
+        public async Task UnSubscribe(Connection currentConnection)
+        {
+            var groupNames = currentConnection.SubscribedTopics;
+            foreach (var groupName in groupNames)
+            {
+                await _hub.GetGroupProxy(groupName)
+                    .RemoveClientFromGroup(currentConnection.Id);
+            }
+        }
     }
 }

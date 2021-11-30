@@ -9,6 +9,7 @@ namespace OneNet.PubSub.Server.Application.Services
         Task AbortTopic(string topicName);
         Task SendMessage(string topicName, object data);
         Task UnSubscribe(string topicName);
+        Task UnSubscribeAll();
         Task Subscribe(string topicName);
     }
 }

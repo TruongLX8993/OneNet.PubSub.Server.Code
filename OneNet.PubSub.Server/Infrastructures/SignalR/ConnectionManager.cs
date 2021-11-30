@@ -5,12 +5,12 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR
     /// <summary>
     /// To manage all connection in hub.
     /// </summary>
-    public class HubConnectionManager
+    public class ConnectionManager
     {
         private readonly ConnectionList _connectionList;
         private string _hubName;
 
-        public HubConnectionManager()
+        public ConnectionManager()
         {
             _connectionList = new ConnectionList();
             _hubName = nameof(_hubName);

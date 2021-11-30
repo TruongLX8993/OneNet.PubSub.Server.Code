@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.SignalR;
 using OneNet.PubSub.Server.Hubs;
 
 namespace OneNet.PubSub.Server.Infrastructures.SignalR
@@ -9,48 +10,51 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR
     {
         private static GroupManagerFactory _instance;
         public static GroupManagerFactory Instance => _instance ??= new GroupManagerFactory();
-        private readonly IDictionary<Type, GroupManager> _managers;
+        private readonly IDictionary<Type, GroupManagerProxy> _managers;
 
         private GroupManagerFactory()
         {
-            _managers = new ConcurrentDictionary<Type, GroupManager>();
+            _managers = new ConcurrentDictionary<Type, GroupManagerProxy>();
         }
 
-        public GroupManager Get(BaseHub hub)
+        public GroupManagerProxy Get(BaseHub hub)
         {
             var type = hub.GetType();
             if (!_managers.ContainsKey(type))
             {
-                _managers.Add(type, new GroupManager());
+                _managers.Add(type, new GroupManagerProxy());
             }
 
             return _managers[type]
-                .UpdateCurrentHub(hub);
+                .UpdateGroupManager(hub.Groups);
         }
     }
 
-    public class GroupManager
+    /// <summary>
+    /// Manage group in hubs.
+    /// </summary>
+    public class GroupManagerProxy
     {
-        private BaseHub _baseHub;
+        private IGroupManager _groupManager;
         private readonly IDictionary<string, GroupProxy> _signalRGroupProxies;
 
-        public GroupManager()
+        public GroupManagerProxy()
         {
             _signalRGroupProxies = new Dictionary<string, GroupProxy>();
         }
 
-        public GroupManager UpdateCurrentHub(BaseHub hub)
+        public GroupManagerProxy UpdateGroupManager(IGroupManager groupManager)
         {
-            _baseHub = hub;
+            _groupManager = groupManager;
             return this;
         }
 
         public GroupProxy GetGroupProxy(string groupName)
         {
             if (!_signalRGroupProxies.ContainsKey(groupName))
-                _signalRGroupProxies.Add(groupName, new GroupProxy());
+                _signalRGroupProxies.Add(groupName, new GroupProxy(groupName));
             var groupProxy = _signalRGroupProxies[groupName];
-            groupProxy.UpdateHub(_baseHub);
+            groupProxy.UpdateGroupManager(_groupManager);
             return groupProxy;
         }
     }

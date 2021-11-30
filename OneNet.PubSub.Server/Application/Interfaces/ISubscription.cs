@@ -7,5 +7,6 @@ namespace OneNet.PubSub.Server.Application.Interfaces
     {
         Task Subscribe(Topic topic,Connection connection);
         Task UnSubscribe(Topic topic, Connection connection);
+        Task UnSubscribe(Connection currentConnection);
     }
 }

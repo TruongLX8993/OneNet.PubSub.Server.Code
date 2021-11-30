@@ -16,19 +16,19 @@ namespace OneNet.PubSub.Server.Application.Domains
 
         public void Add(Connection connection)
         {
-            _connections.Add(connection);
+            if (!_connections.Contains(connection))
+                _connections.Add(connection);
         }
 
         public void Remove(Connection connection)
         {
-            if (_connections.Count > 0)
+            if (_connections.Contains(connection))
                 _connections.Remove(connection);
         }
 
         public void Remove(string connectionId)
         {
-            var connection = _connections
-                .FirstOrDefault(c => c.Id == connectionId);
+            var connection = GetById(connectionId);
             if (connection != null)
                 _connections.Remove(connection);
         }

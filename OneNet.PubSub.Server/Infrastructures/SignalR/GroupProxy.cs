@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using OneNet.PubSub.Server.Application.Domains;
-using OneNet.PubSub.Server.Hubs;
 
 namespace OneNet.PubSub.Server.Infrastructures.SignalR
 {
@@ -10,31 +10,32 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR
     /// </summary>
     public class GroupProxy
     {
-        private BaseHub _hub;
-        private string _groupName;
+        private IGroupManager _groupManager;
+        private readonly string _groupName;
         private readonly ConnectionList _connectionList;
 
-        public GroupProxy()
+        public GroupProxy(string groupName)
         {
+            _groupName = groupName;
             _connectionList = new ConnectionList();
         }
 
 
         public async Task AddClientToGroup(Connection connection)
         {
-            await _hub.Groups.AddToGroupAsync(connection.Id, _groupName);
+            await _groupManager.AddToGroupAsync(connection.Id, _groupName);
             _connectionList.Add(connection);
         }
 
         public async Task RemoveClientFromGroup(string connectionId)
         {
-            await _hub.Groups.RemoveFromGroupAsync(connectionId, _groupName);
+            await _groupManager.RemoveFromGroupAsync(connectionId, _groupName);
             _connectionList.Remove(connectionId);
         }
 
         private async Task RemoveClientFromGroup(Connection connection)
         {
-            await _hub.Groups.RemoveFromGroupAsync(connection.Id, _groupName);
+            await _groupManager.RemoveFromGroupAsync(connection.Id, _groupName);
             _connectionList.Remove(connection.Id);
         }
 
@@ -44,15 +45,14 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR
             var data = _connectionList.GetConnections();
             foreach (var connection in data)
             {
-                await _hub.Groups.RemoveFromGroupAsync(connection.Id, _groupName);
+                await _groupManager.RemoveFromGroupAsync(connection.Id, _groupName);
                 _connectionList.Remove(connection.Id);
             }
         }
 
-        public GroupProxy UpdateHub(BaseHub hub)
+        public GroupProxy UpdateGroupManager(IGroupManager groupManager)
         {
-            _hub = hub;
-            _groupName = hub.Name;
+            _groupManager = groupManager;
             return this;
         }
     }

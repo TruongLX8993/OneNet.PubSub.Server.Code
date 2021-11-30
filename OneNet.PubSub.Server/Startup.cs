@@ -1,16 +1,16 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using OneNet.PubSub.Server.Application.Repository;
-using OneNet.PubSub.Server.Application.Services;
 using OneNet.PubSub.Server.Extensions;
 using OneNet.PubSub.Server.Hubs;
 using OneNet.PubSub.Server.Infrastructures.Repository;
-using OneNet.PubSub.Server.Infrastructures.SignalR;
+using OneNet.PubSub.Server.Infrastructures.SignalR.Filters;
 
 namespace OneNet.PubSub.Server
 {
@@ -31,7 +31,7 @@ namespace OneNet.PubSub.Server
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "OneNet.PubSub.Server", Version = "v1" });
             });
-            services.AddSignalR();
+            services.AddSignalR(options => { options.AddFilter<HubExceptionFilter>(); });
             services.AddSingleton<ITopicRepository, TopicRepository>();
         }
 
@@ -58,7 +58,7 @@ namespace OneNet.PubSub.Server
             {
                 endpoints.MapControllers();
                 endpoints.MapGet("/", context => context.Response.WriteAsync("OneNet.PubSub.Serve"));
-                endpoints.MapHub<PubSubHub>("pub-sub");
+                endpoints.MapHub<PubSubHub>(BaseHub.GetName<PubSubHub>());
             });
         }
     }
