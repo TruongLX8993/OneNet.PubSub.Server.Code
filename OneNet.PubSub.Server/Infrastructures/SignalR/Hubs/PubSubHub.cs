@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -8,10 +7,9 @@ using OneNet.PubSub.Server.Application.Domains;
 using OneNet.PubSub.Server.Application.DTOs;
 using OneNet.PubSub.Server.Application.Repository;
 using OneNet.PubSub.Server.Application.Services;
-using OneNet.PubSub.Server.Infrastructures.SignalR;
 using OneNet.PubSub.Server.Infrastructures.SignalR.Impls;
 
-namespace OneNet.PubSub.Server.Hubs
+namespace OneNet.PubSub.Server.Infrastructures.SignalR.Hubs
 {
     [HubNameAttr("pub-sub")]
     public class PubSubHub : BaseHub

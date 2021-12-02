@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using OneNet.PubSub.Server.Hubs;
+using OneNet.PubSub.Server.Infrastructures.SignalR.Hubs;
 
 namespace OneNet.PubSub.Server.Infrastructures.SignalR
 {

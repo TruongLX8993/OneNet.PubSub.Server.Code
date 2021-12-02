@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.SignalR;
-using OneNet.PubSub.Server.Hubs;
+using OneNet.PubSub.Server.Infrastructures.SignalR.Hubs;
 
 namespace OneNet.PubSub.Server.Infrastructures.SignalR
 {

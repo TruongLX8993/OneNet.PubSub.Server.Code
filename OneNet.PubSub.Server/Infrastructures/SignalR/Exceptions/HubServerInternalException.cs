@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-namespace OneNet.PubSub.Server.Exceptions
+namespace OneNet.PubSub.Server.Infrastructures.SignalR.Exceptions
 {
     public class HubServerInternalException : HubException
     {

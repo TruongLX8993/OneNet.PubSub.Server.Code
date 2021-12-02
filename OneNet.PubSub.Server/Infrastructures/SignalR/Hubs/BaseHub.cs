@@ -3,9 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using OneNet.PubSub.Server.Application.Domains;
-using OneNet.PubSub.Server.Infrastructures.SignalR;
 
-namespace OneNet.PubSub.Server.Hubs
+namespace OneNet.PubSub.Server.Infrastructures.SignalR.Hubs
 {
     public class BaseHub : Hub
     {

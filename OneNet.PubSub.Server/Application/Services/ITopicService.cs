@@ -11,5 +11,6 @@ namespace OneNet.PubSub.Server.Application.Services
         Task UnSubscribe(string topicName);
         Task UnSubscribeAll();
         Task Subscribe(string topicName);
+        Task<TopicDTO> GetByName(string name);
     }
 }

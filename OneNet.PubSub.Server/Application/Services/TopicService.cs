@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using OneNet.PubSub.Server.Application.Domains;
 using OneNet.PubSub.Server.Application.DTOs;
+using OneNet.PubSub.Server.Application.Exceptions;
 using OneNet.PubSub.Server.Application.Interfaces;
 using OneNet.PubSub.Server.Application.Repository;
-using OneNet.PubSub.Server.Exceptions;
 
 namespace OneNet.PubSub.Server.Application.Services
 {
@@ -13,7 +13,6 @@ namespace OneNet.PubSub.Server.Application.Services
         private readonly ITopicRepository _topicRepository;
         private readonly ICurrentConnection _currentConnection;
         private readonly INotification _notification;
-
         private readonly IMessageSender _messageSender;
         private readonly ISubscription _subscription;
 
@@ -45,7 +44,7 @@ namespace OneNet.PubSub.Server.Application.Services
                 if (topic.IsOwnerConnection(currentConnection))
                     return new CreateTopicResponse(topicDTO, false);
 
-                if (!topic.CanUpdateOwnerConnection(currentConnection)) throw new ExistedTopicException();
+                if (!topic.CanUpdateOwnerConnection(currentConnection)) throw new ExistedTopicException(topicName);
 
                 topic.UpdateConnectionOwner(currentConnection, true);
                 return new CreateTopicResponse(topicDTO, false);
@@ -79,7 +78,7 @@ namespace OneNet.PubSub.Server.Application.Services
         {
             var topic = await _topicRepository.GetByName(topicName);
             if (topic == null)
-                throw new NotExistTopicException(topicName);
+                throw new NotFoundTopicException(topicName);
             await _messageSender.SendMessage(topic, data);
         }
 
@@ -87,7 +86,7 @@ namespace OneNet.PubSub.Server.Application.Services
         {
             var topic = await _topicRepository.GetByName(topicName);
             if (topic == null)
-                throw new NotExistTopicException(topicName);
+                throw new NotFoundTopicException(topicName);
             var currentConnection = _currentConnection.GetConnection();
             await _subscription.UnSubscribe(topic, currentConnection);
         }
@@ -109,10 +108,18 @@ namespace OneNet.PubSub.Server.Application.Services
         {
             var topic = await _topicRepository.GetByName(topicName);
             if (topic == null)
-                throw new NotExistTopicException(topicName);
+                throw new NotFoundTopicException(topicName);
             var currentConnection = _currentConnection.GetConnection();
             await _subscription.Subscribe(topic, currentConnection);
             currentConnection.AddTopic(topicName);
+        }
+
+        public async Task<TopicDTO> GetByName(string name)
+        {
+            var topic = await _topicRepository.GetByName(name);
+            if (topic == null)
+                return new TopicDTO(topic);
+            throw new NotFoundTopicException($"{name}");
         }
     }
 }

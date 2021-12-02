@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OneNet.PubSub.Server.Hubs
+namespace OneNet.PubSub.Server.Infrastructures.SignalR.Hubs
 {
     public class HubNameAttr : Attribute
     {

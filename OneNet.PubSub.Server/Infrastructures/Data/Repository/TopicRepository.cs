@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OneNet.PubSub.Server.Application.Domains;
 using OneNet.PubSub.Server.Application.Repository;
 
-namespace OneNet.PubSub.Server.Infrastructures.Repository
+namespace OneNet.PubSub.Server.Infrastructures.Data.Repository
 {
     public class TopicRepository : ITopicRepository
     {

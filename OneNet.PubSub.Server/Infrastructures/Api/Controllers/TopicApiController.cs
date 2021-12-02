@@ -2,9 +2,10 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OneNet.PubSub.Server.Application.DTOs;
+using OneNet.PubSub.Server.Application.Exceptions;
 using OneNet.PubSub.Server.Application.Repository;
 
-namespace OneNet.PubSub.Server.Apis.Controllers
+namespace OneNet.PubSub.Server.Infrastructures.Api.Controllers
 {
     [ApiController]
     [Route("api/topic")]
@@ -28,6 +29,16 @@ namespace OneNet.PubSub.Server.Apis.Controllers
                 Status = 0,
                 Data = rs
             });
+        }
+
+        [Route("get-by-name")]
+        public async Task<IActionResult> GetByName([FromQuery] string name)
+        {
+            var topic = await _topicRepository.GetByName(name);
+            if (topic == null)
+                throw new NotFoundTopicException(name);
+            var topicDto = new TopicDTO(topic);
+            return Ok(ApiResponse.CreateSuccess(topicDto));
         }
     }
 }

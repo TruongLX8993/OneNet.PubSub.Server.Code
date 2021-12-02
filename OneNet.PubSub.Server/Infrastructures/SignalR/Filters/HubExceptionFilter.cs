@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using OneNet.PubSub.Server.Exceptions;
+using ApplicationException = OneNet.PubSub.Server.Application.Exceptions.ApplicationException;
 
 namespace OneNet.PubSub.Server.Infrastructures.SignalR.Filters
 {
@@ -23,15 +23,20 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR.Filters
             {
                 return await next(invocationContext);
             }
-            catch (HubException hubException)
+            catch (HubException e)
             {
-                _logger.LogError(hubException, $"{hubMethod}");
+                _logger.LogError(e, $"Hub method: {hubMethod}");
                 throw;
             }
-            catch (Exception ex)
+            catch (ApplicationException e)
             {
-                _logger.LogError(ex, $"{hubMethod}");
-                throw ;
+                _logger.LogError(e, $"Hub method: {hubMethod}");
+                throw new HubException(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Hub method: {hubMethod}");
+                throw;
             }
         }
     }

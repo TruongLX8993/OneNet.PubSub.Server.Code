@@ -2,6 +2,7 @@
 
 namespace OneNet.PubSub.Server.Application.Domains
 {
+
     public class Topic
     {
         public string Id { get; }

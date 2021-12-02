@@ -9,11 +9,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using OneNet.PubSub.Server.Application.Repository;
-using OneNet.PubSub.Server.Extensions;
-using OneNet.PubSub.Server.Hubs;
-using OneNet.PubSub.Server.Infrastructures.Repository;
+using OneNet.PubSub.Server.Infrastructures.Api.Handlers;
 using OneNet.PubSub.Server.Infrastructures.SignalR;
 using OneNet.PubSub.Server.Infrastructures.SignalR.Filters;
+using OneNet.PubSub.Server.Infrastructures.SignalR.Hubs;
+using TopicRepository = OneNet.PubSub.Server.Infrastructures.Data.Repository.TopicRepository;
 
 namespace OneNet.PubSub.Server
 {
@@ -39,10 +39,8 @@ namespace OneNet.PubSub.Server
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,ILoggerFactory  loggerFactory )
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddLog4Net();
-            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -50,8 +48,8 @@ namespace OneNet.PubSub.Server
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "OneNet.PubSub.Server v1"));
             }
 
-            app.ConfigureExceptionHandler();
-
+            loggerFactory.AddLog4Net();
+            app.AddApiExceptionHandler(loggerFactory.CreateLogger("Global-Exception-Handler"));
             // app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
@@ -59,13 +57,14 @@ namespace OneNet.PubSub.Server
                 .AllowAnyMethod()
                 .SetIsOriginAllowed(host => true)
                 .AllowCredentials());
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapGet("/", context => context.Response.WriteAsync("OneNet.PubSub.Serve"));
+                endpoints.MapGet("/", context => context.Response.WriteAsync("OneNet.PubSub.Server"));
                 endpoints.MapHub<PubSubHub>(BaseHub.GetName<PubSubHub>());
             });
-            
+            // SignalR Infrastructure.
             HubConnectionManagerPool.Instance.Init();
         }
     }
