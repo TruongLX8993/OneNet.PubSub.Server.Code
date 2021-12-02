@@ -79,7 +79,7 @@ namespace OneNet.PubSub.Server.Application.Services
         {
             var topic = await _topicRepository.GetByName(topicName);
             if (topic == null)
-                throw new NotExistTopicException();
+                throw new NotExistTopicException(topicName);
             await _messageSender.SendMessage(topic, data);
         }
 
@@ -87,7 +87,7 @@ namespace OneNet.PubSub.Server.Application.Services
         {
             var topic = await _topicRepository.GetByName(topicName);
             if (topic == null)
-                throw new NotExistTopicException();
+                throw new NotExistTopicException(topicName);
             var currentConnection = _currentConnection.GetConnection();
             await _subscription.UnSubscribe(topic, currentConnection);
         }
@@ -96,17 +96,20 @@ namespace OneNet.PubSub.Server.Application.Services
         {
             var currentConnection = _currentConnection.GetConnection();
             var topics = await _topicRepository.GetByOwnerConnectionId(currentConnection.Id);
-            var canAbortTopic = topics.Where(topic => topic.IsAbortWhenOwnerDisconnect())
+            var abortTopics = topics.Where(topic => topic.IsAbortWhenOwnerDisconnect())
+                .Select(topic => topic.Name)
                 .ToList();
             await _subscription.UnSubscribe(currentConnection);
             currentConnection.RemoveAllTopics();
+            foreach (var abortTopic in abortTopics)
+                await AbortTopic(abortTopic);
         }
 
         public async Task Subscribe(string topicName)
         {
             var topic = await _topicRepository.GetByName(topicName);
             if (topic == null)
-                throw new NotExistTopicException();
+                throw new NotExistTopicException(topicName);
             var currentConnection = _currentConnection.GetConnection();
             await _subscription.Subscribe(topic, currentConnection);
             currentConnection.AddTopic(topicName);

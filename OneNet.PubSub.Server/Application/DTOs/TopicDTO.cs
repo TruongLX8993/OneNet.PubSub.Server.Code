@@ -8,12 +8,14 @@ namespace OneNet.PubSub.Server.Application.DTOs
         [JsonProperty("name")] public string Name { get; set; }
         [JsonProperty("ownerName")] public string OwnerName { get; set; }
         [JsonProperty("ownerConnectionId")] public string OwnerConnectionId { get; set; }
+        [JsonProperty("createdTime")] public string CreatedTime { get; set; }
 
         public TopicDTO(Topic topic)
         {
             Name = topic.Name;
-            OwnerName = topic.OwnerConnection.UserName;
-            OwnerConnectionId = topic.OwnerConnection.Id;
+            OwnerName = topic.OwnerConnection?.UserName;
+            OwnerConnectionId = topic.OwnerConnection?.Id;
+            CreatedTime = topic.CreatedTime.ToString();
         }
     }
 }

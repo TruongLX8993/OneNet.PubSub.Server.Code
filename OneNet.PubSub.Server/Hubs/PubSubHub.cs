@@ -9,6 +9,7 @@ using OneNet.PubSub.Server.Application.DTOs;
 using OneNet.PubSub.Server.Application.Repository;
 using OneNet.PubSub.Server.Application.Services;
 using OneNet.PubSub.Server.Infrastructures.SignalR;
+using OneNet.PubSub.Server.Infrastructures.SignalR.Impls;
 
 namespace OneNet.PubSub.Server.Hubs
 {
@@ -16,7 +17,6 @@ namespace OneNet.PubSub.Server.Hubs
     public class PubSubHub : BaseHub
     {
         private readonly ILogger<PubSubHub> _logger;
-        private readonly ITopicRepository _topicRepository;
         private readonly ITopicService _topicService;
 
         public PubSubHub(
@@ -24,7 +24,6 @@ namespace OneNet.PubSub.Server.Hubs
             ITopicRepository topicRepository)
         {
             _logger = logger;
-            _topicRepository = topicRepository;
             _topicService = new TopicService(topicRepository,
                 new CurrentConnectionService(this),
                 new Notification(this),
@@ -32,25 +31,21 @@ namespace OneNet.PubSub.Server.Hubs
                 new Subscription(this));
         }
 
-        public override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
             var username = Context.GetHttpContext()
                 .Request.Query["username"];
             ConnectionManager
                 .AddConnection(Context.ConnectionId, username);
             _logger.LogInformation(
-                $"{nameof(OnConnectedAsync)}-NumberConnection:{ConnectionManager.GetNumberConnection()}");
-            return base.OnConnectedAsync();
+                $"{nameof(OnConnectedAsync)}-NumberConnection: {ConnectionManager.GetNumberConnection()}");
+            _logger.LogDebug(
+                $"{nameof(OnConnectedAsync)}-NewConnection: {Context.ConnectionId}");
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-      
-
             await _topicService.UnSubscribeAll();
-            foreach (var topic in canAbortTopic)
-                await AbortTopic(topic);
-
             ConnectionManager.RemoveConnection(Context.ConnectionId);
             _logger.LogInformation(
                 $"{nameof(OnDisconnectedAsync)}-NumberConnection:{ConnectionManager.GetNumberConnection()}");

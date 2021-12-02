@@ -4,7 +4,7 @@ using OneNet.PubSub.Server.Application.Domains;
 using OneNet.PubSub.Server.Application.Interfaces;
 using OneNet.PubSub.Server.Hubs;
 
-namespace OneNet.PubSub.Server.Infrastructures.SignalR
+namespace OneNet.PubSub.Server.Infrastructures.SignalR.Impls
 {
     public class MessageSender : IMessageSender
     {

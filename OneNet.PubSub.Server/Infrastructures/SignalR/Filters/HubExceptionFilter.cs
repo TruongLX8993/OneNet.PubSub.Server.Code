@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using OneNet.PubSub.Server.Exceptions;
-using OneNet.PubSub.Server.Hubs;
 
 namespace OneNet.PubSub.Server.Infrastructures.SignalR.Filters
 {
@@ -26,13 +25,13 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR.Filters
             }
             catch (HubException hubException)
             {
-                _logger.LogError($"{hubMethod}", hubException);
+                _logger.LogError(hubException, $"{hubMethod}");
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"{hubMethod}", ex);
-                throw new HubServerInternalException();
+                _logger.LogError(ex, $"{hubMethod}");
+                throw ;
             }
         }
     }

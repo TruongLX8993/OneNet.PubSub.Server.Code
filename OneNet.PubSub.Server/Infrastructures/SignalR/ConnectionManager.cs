@@ -1,4 +1,6 @@
-﻿using OneNet.PubSub.Server.Application.Domains;
+﻿using System.Diagnostics;
+using Newtonsoft.Json;
+using OneNet.PubSub.Server.Application.Domains;
 
 namespace OneNet.PubSub.Server.Infrastructures.SignalR
 {
@@ -9,7 +11,7 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR
     {
         private readonly ConnectionList _connectionList;
         private string _hubName;
-
+        private readonly object _lock = new object();
         public ConnectionManager()
         {
             _connectionList = new ConnectionList();
@@ -18,28 +20,44 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR
 
         public void AddConnection(string connectionId, string username)
         {
-            var connection = new Connection()
+            lock (_lock)
             {
-                Id = connectionId,
-                HubName = _hubName,
-                UserName = username
-            };
-            _connectionList.Add(connection);
+                var connection = new Connection()
+                {
+                    Id = connectionId,
+                    HubName = _hubName,
+                    UserName = username
+                };
+                _connectionList.Add(connection);
+                Debug.WriteLine($"{nameof(AddConnection)}: {connectionId}, {username},{GetHashCode()}");
+            }
         }
 
         public void RemoveConnection(string connectionId)
         {
-            _connectionList.Remove(connectionId);
+            lock (_lock)
+            {
+                _connectionList.Remove(connectionId);
+            }
         }
 
         public int GetNumberConnection()
         {
-            return _connectionList.Count;
+            lock (_lock)
+            {
+                return _connectionList.Count;
+            }
         }
 
         public Connection GetById(string id)
         {
-            return _connectionList.GetById(id);
+            lock (_lock)
+            {
+                var res = _connectionList.GetById(id);
+                if (res == null)
+                    Debug.WriteLine($"{nameof(GetById)}: {id},{GetHashCode()}");
+                return res;
+            }
         }
     }
 }

@@ -32,7 +32,10 @@ namespace OneNet.PubSub.Server.Hubs
         public Connection GetCurrentConnection()
         {
             var connectionId = Context.ConnectionId;
-            return ConnectionManager.GetById(connectionId);
+            var res = ConnectionManager.GetById(connectionId);
+            if (res == null)
+                throw new Exception($"Not found current connection with id:{connectionId}");
+            return res;
         }
 
         public static string GetName<T>() where T : BaseHub

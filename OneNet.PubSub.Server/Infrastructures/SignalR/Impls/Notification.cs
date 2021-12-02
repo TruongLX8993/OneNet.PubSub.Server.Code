@@ -5,7 +5,7 @@ using OneNet.PubSub.Server.Application.DTOs;
 using OneNet.PubSub.Server.Application.Interfaces;
 using OneNet.PubSub.Server.Hubs;
 
-namespace OneNet.PubSub.Server.Infrastructures.SignalR
+namespace OneNet.PubSub.Server.Infrastructures.SignalR.Impls
 {
     public class Notification : INotification
     {

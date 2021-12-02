@@ -9,21 +9,30 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR
     {
         private static HubConnectionManagerPool _instance;
         public static HubConnectionManagerPool Instance => _instance ??= new HubConnectionManagerPool();
-
         private readonly IDictionary<Type, ConnectionManager> _connectionManagers;
+        private readonly object _lock = new object();
 
+        
         private HubConnectionManagerPool()
         {
             _connectionManagers = new ConcurrentDictionary<Type, ConnectionManager>();
         }
 
+        public void Init()
+        {
+            // Todo
+        }
+
         public ConnectionManager Get(BaseHub baseHub)
         {
-            var type = baseHub.GetType();
-            if (_connectionManagers.ContainsKey(type))
+            lock (_lock)
+            {
+                var type = baseHub.GetType();
+                if (_connectionManagers.ContainsKey(type))
+                    return _connectionManagers[type];
+                _connectionManagers.TryAdd(type, new ConnectionManager());
                 return _connectionManagers[type];
-            _connectionManagers.Add(type, new ConnectionManager());
-            return _connectionManagers[type];
+            }
         }
     }
 }
