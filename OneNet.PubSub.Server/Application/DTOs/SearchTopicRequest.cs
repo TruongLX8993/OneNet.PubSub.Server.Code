@@ -2,7 +2,7 @@
 
 namespace OneNet.PubSub.Server.Application.DTOs
 {
-    public class FindTopicRequest
+    public class SearchTopicRequest
     {
         [JsonProperty("name")] public string Name { get; set; }
     }

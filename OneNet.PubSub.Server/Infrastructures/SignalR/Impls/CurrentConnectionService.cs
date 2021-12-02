@@ -2,13 +2,13 @@
 using OneNet.PubSub.Server.Application.Interfaces;
 using OneNet.PubSub.Server.Infrastructures.SignalR.Hubs;
 
-namespace OneNet.PubSub.Server.Infrastructures.SignalR
+namespace OneNet.PubSub.Server.Infrastructures.SignalR.Impls
 {
-    public class CurrentConnectionService : ICurrentConnection
+    public class CurrentConnectionService : ICurrentConnectionService
     {
-        private readonly BaseHub _baseHub;
+        private BaseHub _baseHub;
 
-        public CurrentConnectionService(BaseHub baseHub)
+        public void UpdateConnectionSource(BaseHub baseHub)
         {
             _baseHub = baseHub;
         }

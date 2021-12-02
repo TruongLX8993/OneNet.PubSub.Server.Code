@@ -12,7 +12,7 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR.Hubs
         {
         }
 
-        public GroupProxy GetGroupProxy(string groupName) => GroupManagerFactory.Instance.Get(this)
+        protected GroupProxy GetGroupProxy(string groupName) => GroupManagerFactory.Instance.Get(this)
             .GetGroupProxy(groupName);
 
         protected ConnectionManager ConnectionManager => HubConnectionManagerPool.Instance.Get(this);

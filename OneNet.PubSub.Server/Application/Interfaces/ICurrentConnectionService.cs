@@ -2,7 +2,7 @@
 
 namespace OneNet.PubSub.Server.Application.Interfaces
 {
-    public interface ICurrentConnection 
+    public interface ICurrentConnectionService 
     {
         public Connection GetConnection();
     }

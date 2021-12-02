@@ -9,9 +9,9 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR.Impls
 {
     public class Notification : INotification
     {
-        private readonly BaseHub _hub;
+        private readonly IHubContext<PubSubHub> _hub;
 
-        public Notification(BaseHub hub)
+        public Notification(IHubContext<PubSubHub> hub)
         {
             _hub = hub;
         }
@@ -19,7 +19,6 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR.Impls
         {
             await _hub.Clients.Group(topic.Name)
                 .SendAsync("onAbortTopic", new TopicDTO(topic));
-            await _hub.RemoveAllClientFromGroup(topic.Name);
         }
 
         public async Task OnCreateTopic(Topic topic)

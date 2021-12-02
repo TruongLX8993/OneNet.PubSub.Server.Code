@@ -8,24 +8,27 @@ using OneNet.PubSub.Server.Application.Repository;
 
 namespace OneNet.PubSub.Server.Application.Services
 {
+    /// <summary>
+    /// For Websocket service.
+    /// </summary>
+    
     public class TopicService : ITopicService
     {
         private readonly ITopicRepository _topicRepository;
-        private readonly ICurrentConnection _currentConnection;
+        private readonly ICurrentConnectionService _currentConnectionService;
         private readonly INotification _notification;
         private readonly IMessageSender _messageSender;
         private readonly ISubscription _subscription;
-
-
+        
         public TopicService(
             ITopicRepository topicRepository,
-            ICurrentConnection currentConnection,
+            ICurrentConnectionService currentConnectionService,
             INotification notification,
             IMessageSender messageSender,
             ISubscription subscription)
         {
             _topicRepository = topicRepository;
-            _currentConnection = currentConnection;
+            _currentConnectionService = currentConnectionService;
             _notification = notification;
             _messageSender = messageSender;
             _subscription = subscription;
@@ -36,7 +39,7 @@ namespace OneNet.PubSub.Server.Application.Services
             TopicConfigDTO topicConfig)
         {
             var topic = await _topicRepository.GetByName(topicName);
-            var currentConnection = _currentConnection.GetConnection();
+            var currentConnection = _currentConnectionService.GetConnection();
 
             if (topic != null)
             {
@@ -87,15 +90,15 @@ namespace OneNet.PubSub.Server.Application.Services
             var topic = await _topicRepository.GetByName(topicName);
             if (topic == null)
                 throw new NotFoundTopicException(topicName);
-            var currentConnection = _currentConnection.GetConnection();
+            var currentConnection = _currentConnectionService.GetConnection();
             await _subscription.UnSubscribe(topic, currentConnection);
         }
 
         public async Task UnSubscribeAll()
         {
-            var currentConnection = _currentConnection.GetConnection();
+            var currentConnection = _currentConnectionService.GetConnection();
             var topics = await _topicRepository.GetByOwnerConnectionId(currentConnection.Id);
-            var abortTopics = topics.Where(topic => topic.IsAbortWhenOwnerDisconnect())
+            var abortTopics = topics.Where(topic => topic.IsAbortWhenOwnerUnSubscribe())
                 .Select(topic => topic.Name)
                 .ToList();
             await _subscription.UnSubscribe(currentConnection);
@@ -109,7 +112,7 @@ namespace OneNet.PubSub.Server.Application.Services
             var topic = await _topicRepository.GetByName(topicName);
             if (topic == null)
                 throw new NotFoundTopicException(topicName);
-            var currentConnection = _currentConnection.GetConnection();
+            var currentConnection = _currentConnectionService.GetConnection();
             await _subscription.Subscribe(topic, currentConnection);
             currentConnection.AddTopic(topicName);
         }

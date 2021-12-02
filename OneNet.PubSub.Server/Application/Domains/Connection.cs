@@ -7,7 +7,7 @@ namespace OneNet.PubSub.Server.Application.Domains
         public string UserName { get; set; }
         public string Id { get; set; }
         public string HubName { get; set; }
-        public IList<string> SubscribedTopics { get; set; } = new List<string>();
+        public IList<string> SubscribedTopics { get; } = new List<string>();
 
         public void AddTopic(string topic)
         {

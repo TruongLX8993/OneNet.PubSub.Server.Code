@@ -17,16 +17,28 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR
             _managers = new ConcurrentDictionary<Type, GroupManagerProxy>();
         }
 
-        public GroupManagerProxy Get(BaseHub hub)
+        public GroupManagerProxy Get<T>(IHubContext<T> hubContext) where T : Hub
         {
-            var type = hub.GetType();
+            var type = typeof(T);
             if (!_managers.ContainsKey(type))
             {
                 _managers.Add(type, new GroupManagerProxy());
             }
 
             return _managers[type]
-                .UpdateGroupManager(hub.Groups);
+                .UpdateGroupManager(hubContext.Groups);
+        }
+
+        public GroupManagerProxy Get(BaseHub baseHub)
+        {
+            var type = baseHub.GetType();
+            if (!_managers.ContainsKey(type))
+            {
+                _managers.Add(type, new GroupManagerProxy());
+            }
+
+            return _managers[type]
+                .UpdateGroupManager(baseHub.Groups);
         }
     }
 

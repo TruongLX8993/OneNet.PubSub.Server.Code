@@ -40,7 +40,7 @@ namespace OneNet.PubSub.Server.Application.Domains
             return OwnerConnectionId == currentConnection.Id;
         }
 
-        public bool IsAbortWhenOwnerDisconnect()
+        public bool IsAbortWhenOwnerUnSubscribe()
         {
             return !TopicConfig.IsKeepTopicWhenOwnerDisconnect;
         }

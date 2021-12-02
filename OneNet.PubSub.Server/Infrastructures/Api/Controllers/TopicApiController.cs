@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using OneNet.PubSub.Server.Application.DTOs;
 using OneNet.PubSub.Server.Application.Exceptions;
 using OneNet.PubSub.Server.Application.Repository;
+using OneNet.PubSub.Server.Application.Services;
 
 namespace OneNet.PubSub.Server.Infrastructures.Api.Controllers
 {
@@ -11,34 +12,24 @@ namespace OneNet.PubSub.Server.Infrastructures.Api.Controllers
     [Route("api/topic")]
     public class TopicApiController : Controller
     {
-        private readonly ITopicRepository _topicRepository;
+        private readonly ITopicSearchingService _topicSearchingService;
 
-        public TopicApiController(ITopicRepository topicRepository)
+        public TopicApiController(ITopicSearchingService topicSearchingService)
         {
-            _topicRepository = topicRepository;
+            _topicSearchingService = topicSearchingService;
         }
-
         [Route("search")]
-        public async Task<IActionResult> SearchTopic([FromQuery] FindTopicRequest request)
+        public async Task<IActionResult> SearchTopic([FromQuery] SearchTopicRequest request)
         {
-            var topics = await _topicRepository.Search(request.Name);
-            var rs = topics.Select(tp => new TopicDTO(tp))
-                .ToList();
-            return Ok(new ApiResponse()
-            {
-                Status = 0,
-                Data = rs
-            });
+            var res = await _topicSearchingService.Search(request);
+            return Ok(ApiResponse.CreateSuccess(res));
         }
 
         [Route("get-by-name")]
         public async Task<IActionResult> GetByName([FromQuery] string name)
         {
-            var topic = await _topicRepository.GetByName(name);
-            if (topic == null)
-                throw new NotFoundTopicException(name);
-            var topicDto = new TopicDTO(topic);
-            return Ok(ApiResponse.CreateSuccess(topicDto));
+            var res = await _topicSearchingService.GetByName(name);
+            return Ok(ApiResponse.CreateSuccess(res));
         }
     }
 }

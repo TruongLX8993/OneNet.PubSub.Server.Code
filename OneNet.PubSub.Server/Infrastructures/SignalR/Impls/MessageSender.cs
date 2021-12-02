@@ -8,16 +8,16 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR.Impls
 {
     public class MessageSender : IMessageSender
     {
-        private readonly BaseHub _baseHub;
+        private readonly IHubContext<PubSubHub> _hubContext;
 
-        public MessageSender(BaseHub baseHub)
+        public MessageSender(IHubContext<PubSubHub> hubContext)
         {
-            _baseHub = baseHub;
+            _hubContext = hubContext;
         }
 
         public async Task SendMessage(Topic topic, object data)
         {
-            await _baseHub.Clients.Group(topic.Name)
+            await _hubContext.Clients.Group(topic.Name)
                 .SendAsync("onNewMessage", topic.Name, data);
         }
     }

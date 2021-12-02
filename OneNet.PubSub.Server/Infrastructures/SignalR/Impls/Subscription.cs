@@ -1,29 +1,32 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using OneNet.PubSub.Server.Application.Domains;
 using OneNet.PubSub.Server.Application.Interfaces;
 using OneNet.PubSub.Server.Infrastructures.SignalR.Hubs;
 
-namespace OneNet.PubSub.Server.Infrastructures.SignalR
+namespace OneNet.PubSub.Server.Infrastructures.SignalR.Impls
 {
     public class Subscription : ISubscription
     {
-        private readonly BaseHub _hub;
+        private readonly IHubContext<PubSubHub> _hubContext;
 
-        public Subscription(BaseHub hub)
+        public Subscription(IHubContext<PubSubHub> hubContext)
         {
-            _hub = hub;
+            _hubContext = hubContext;
         }
+
 
         public async Task Subscribe(Topic topic, Connection connection)
         {
-            await _hub.GetGroupProxy(topic.Name)
+            var groupManagerProxy = GroupManagerFactory.Instance.Get(_hubContext);
+            await groupManagerProxy.GetGroupProxy(topic.Name)
                 .AddClientToGroup(connection);
         }
 
         public async Task UnSubscribe(Topic topic, Connection connection)
         {
-            await _hub.GetGroupProxy(topic.Name)
-                .RemoveClientFromGroup(connection.Id);
+            var group = GetGroup(topic.Name);
+            await group.RemoveClientFromGroup(connection.Id);
         }
 
         public async Task UnSubscribe(Connection currentConnection)
@@ -31,9 +34,15 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR
             var groupNames = currentConnection.SubscribedTopics;
             foreach (var groupName in groupNames)
             {
-                await _hub.GetGroupProxy(groupName)
+                await GetGroup(groupName)
                     .RemoveClientFromGroup(currentConnection.Id);
             }
+        }
+
+        private GroupProxy GetGroup(string name)
+        {
+            var groupManagerProxy = GroupManagerFactory.Instance.Get(_hubContext);
+            return groupManagerProxy.GetGroupProxy(name);
         }
     }
 }

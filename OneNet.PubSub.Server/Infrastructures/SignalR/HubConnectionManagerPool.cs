@@ -12,7 +12,7 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR
         private readonly IDictionary<Type, ConnectionManager> _connectionManagers;
         private readonly object _lock = new object();
 
-        
+
         private HubConnectionManagerPool()
         {
             _connectionManagers = new ConcurrentDictionary<Type, ConnectionManager>();

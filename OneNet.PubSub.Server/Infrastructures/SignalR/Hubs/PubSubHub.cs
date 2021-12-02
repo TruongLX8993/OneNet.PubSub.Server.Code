@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OneNet.PubSub.Server.Application.Domains;
 using OneNet.PubSub.Server.Application.DTOs;
-using OneNet.PubSub.Server.Application.Repository;
+using OneNet.PubSub.Server.Application.Interfaces;
 using OneNet.PubSub.Server.Application.Services;
 using OneNet.PubSub.Server.Infrastructures.SignalR.Impls;
 
@@ -19,17 +19,15 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR.Hubs
 
         public PubSubHub(
             ILogger<PubSubHub> logger,
-            ITopicRepository topicRepository)
+            ICurrentConnectionService currentConnectionService,
+            ITopicService topicService)
         {
+            ((CurrentConnectionService)currentConnectionService).UpdateConnectionSource(this);
             _logger = logger;
-            _topicService = new TopicService(topicRepository,
-                new CurrentConnectionService(this),
-                new Notification(this),
-                new MessageSender(this),
-                new Subscription(this));
+            _topicService = topicService;
         }
 
-        public override async Task OnConnectedAsync()
+        public override Task OnConnectedAsync()
         {
             var username = Context.GetHttpContext()
                 .Request.Query["username"];
@@ -37,8 +35,9 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR.Hubs
                 .AddConnection(Context.ConnectionId, username);
             _logger.LogInformation(
                 $"{nameof(OnConnectedAsync)}-NumberConnection: {ConnectionManager.GetNumberConnection()}");
-            _logger.LogDebug(
+            _logger.LogInformation(
                 $"{nameof(OnConnectedAsync)}-NewConnection: {Context.ConnectionId}");
+            return base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
@@ -83,13 +82,13 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR.Hubs
             await _topicService.SendMessage(topic, data);
             _logger.LogInformation(
                 $"{nameof(Publish)}-{Context.ConnectionId}:{topic}-{JsonConvert.SerializeObject(data)}");
-            // await Clients.Group(topic)
-            //     .SendAsync("onNewMessage", topic, data);
         }
 
         private async Task AbortTopic(Topic topic)
         {
             await _topicService.AbortTopic(topic.Name);
+            // Move to service ??.
+            await RemoveAllClientFromGroup(topic.Name);
         }
     }
 }

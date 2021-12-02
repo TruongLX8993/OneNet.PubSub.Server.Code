@@ -15,8 +15,8 @@ namespace OneNet.PubSub.Server.Infrastructures.SignalR.Filters
             _logger = logger;
         }
 
-        public async ValueTask<object?> InvokeMethodAsync(
-            HubInvocationContext invocationContext, Func<HubInvocationContext, ValueTask<object?>> next)
+        public async ValueTask<object> InvokeMethodAsync(
+            HubInvocationContext invocationContext, Func<HubInvocationContext, ValueTask<object>> next)
         {
             var hubMethod = invocationContext.HubMethod;
             try
